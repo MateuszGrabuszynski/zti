@@ -11,6 +11,8 @@ Projekt na zajęcia z Zastosowań technologii informatycznych (ZTI)
 1. Python - *głównie ze względu na odpowiedni balans pomiędzy szybkością działania, dostępnością bibliotek oraz znajomością przez członków grupy*
 2. Swift - *opcjonalnie, gdy grupie wystarczy czasu, posłuży do utworzenia interfejsu użytkownika*
 
+W ramach zajęć wymagane jest prowadzenie dokumentacji automatycznej (tutaj prawdopodobnie [Sphinx](http://www.sphinx-doc.org/en/master/)) oraz repozytorium do pracy wielu studentów (tutaj Git + Github).
+
 ## Kalendarz
 Członkowie grupy wstępnie ustalili założenia dotyczące realizacji poszczególnych części zadania z założeniem terminów ich wykonania. Należy zauważyć, że terminy te zostały podane poniżej jedynie w celach informacyjnych, nie są wiążące i mogą być zmieniane w zależności od zapotrzebowania.
 
