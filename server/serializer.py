@@ -1,3 +1,5 @@
+import re
+
 # stopwords from nltk.corpus as on Jul 6 2018
 stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've", "you'll", "you'd",
              'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', "she's", 'her', 'hers',
@@ -20,9 +22,9 @@ dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
 
 def extract_string(message):
     response = message.split("nif:isString")
-    if len(response) >1:
+    if len(response) > 1:
         response = response[1].split("\"")
-        if len(response) >1:
+        if len(response) > 1:
             response = response[1]
     return response
 
@@ -83,3 +85,22 @@ def text_to_series(text):
         series += [second_serie]
 
     return series
+
+
+def dict_to_rdf(series):
+    # example_series: [{'word': 'Florence_May_Harding', 'begin': 0, 'end': 20,
+    #                   'subject': 'http://dbpedia.org/resource/Florence_May_Harding',
+    #                   'predicate': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+    #                   'type': 'http://dbpedia.org/ontology/Person'}]
+    response = ''
+    for serie in series:
+        word = re.sub('_', ' ', serie['word'])
+        # todo: move more data here
+        response = f"<http://example.com/example-task1#char={serie['begin']},{serie['end']}>\n" \
+                   f"        a                     nif:RFC5147String , nif:String ;\n" \
+                   f"        nif:anchorOf          \"{word}\"@en ;\n" \
+                   f"        nif:beginIndex        \"{serie['begin']}\"^^xsd:nonNegativeInteger ;\n" \
+                   f"        nif:endIndex          \"{serie['end']}\"^^xsd:nonNegativeInteger ;\n" \
+                   f"        nif:referenceContext  <http://example.com/example-task1#char=0,146> ;\n" \
+                   f"        itsrdf:taIdentRef     dbpedia:{serie['word']} .\n"
+    return response[:-1]

@@ -1,11 +1,11 @@
 import rdflib
-from re import sub
+import re
 
 graph = rdflib.Graph()
 
 
 def check_words(text, words):
-    text = sub(' ', '_', text)
+    text = re.sub(' ', '_', text)
 
     response = []
 
@@ -27,9 +27,9 @@ def check_words(text, words):
                         'word': word,
                         'begin': begin,
                         'end': end,
-                        'subject': subject,
-                        'predicate': predicate,
-                        'type': object_
+                        'subject': str(subject),
+                        'predicate': str(predicate),
+                        'type': str(object_)
                     }
                 ]
 

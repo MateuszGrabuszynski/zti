@@ -17,7 +17,12 @@ def handle_data(data):
         series = extracted
     print(f'series: {series}')
 
-    return str(graph_checker.check_words(extracted, series))
+    graphed = graph_checker.check_words(extracted, series)
+
+    rdf = serializer.dict_to_rdf(graphed)
+
+    response = data + rdf
+    return response
 
 
 def handle_client(conn):
