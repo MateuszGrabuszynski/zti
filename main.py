@@ -3,7 +3,7 @@
 # from server import serializer
 # from server import graph_checker
 
-from . import server
+from server import server
 
 if __name__ == "__main__":
     server.run_server()

@@ -19,7 +19,12 @@ dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
 
 
 def extract_string(message):
-    return (message.split("nif:isString", 1)[1]).split("\"")[1]
+    response = message.split("nif:isString")
+    if len(response) >1:
+        response = response[1].split("\"")
+        if len(response) >1:
+            response = response[1]
+    return response
 
 
 def remove_signs(word):
