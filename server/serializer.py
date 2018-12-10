@@ -29,6 +29,7 @@ def extract_string(message):
     return response
 
 
+# Removes dots, commas etc. if first or last character in word
 def remove_signs(word):
     if word[0] in dotto:
         word = word[1:]
@@ -46,39 +47,53 @@ def text_to_series(text):
     second_serie = ''
 
     for wi in range(0, len(splitted)):
+        # Removes one letter words
         if len(splitted[wi]) == 1:
             continue
+        # If the current word starts from uppercase letter
         elif splitted[wi][0].isupper():
             splitted[wi] = remove_signs(splitted[wi])
+            # If the serie is empty, add current word to it
             if serie == '':
                 serie = splitted[wi]
+            # If the serie is not empty, add underscore and current word to it (basically next word)
             else:
                 serie += '_' + splitted[wi]
-
+                # If previous word was an connector, add it to second_serie
                 if splitted[wi - 1] in connectors:
                     second_serie = splitted[wi]
+                # If second_serie is not empty, add the current word to second_serie
                 elif second_serie != '':
                     second_serie += '_' + splitted[wi]
             continue
+        # If the current word is a connector and serie is not empty, add current serie to series
+        # and underscore with current word to serie
         elif splitted[wi] in connectors and serie != '':
             series += [serie]
             serie += '_' + splitted[wi]
 
+            # If second_serie is not empty add second_serie to series and make second_serie empty
             if second_serie != '':
                 series += [second_serie]
                 second_serie = ''
+
+        # Otherwise
         else:
             splitted[wi] = remove_signs(splitted[wi])
+            # If serie is not empty, add serie to series and make it empty
             if serie != '':
                 series += [serie]
                 serie = ''
-            if splitted[wi] not in stopwords:
-                series += [splitted[wi]]
+            # If current word not in stopwords add it to series
+            # if splitted[wi] not in stopwords:
+            #     series += [splitted[wi]]
 
+            # If second_serie is not empty, add second_serie to series and make it empty
             if second_serie != '':
                 series += [second_serie]
                 second_serie = ''
 
+    # Saves when the keyword is on the last position (last word in sentence)
     if serie != '':
         series += [serie]
     if second_serie != '':

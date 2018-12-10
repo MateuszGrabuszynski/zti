@@ -1,7 +1,7 @@
-# from pprint import PrettyPrinter
-#
-# from server import serializer
-# from server import graph_checker
+from pprint import PrettyPrinter
+
+from server import serializer
+from server import graph_checker
 
 from server import server
 
@@ -9,7 +9,7 @@ if __name__ == "__main__":
     server.run_server()
 
     # pp = PrettyPrinter()
-    # with open('input_sample.txt') as file:
+    # with open('./server/input_sample.txt') as file:
     #     message = file.read()
     #
     # extracted = serializer.extract_string(message)

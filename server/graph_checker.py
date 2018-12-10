@@ -9,11 +9,12 @@ def check_words(text, words):
 
     response = []
 
+    person_ns = rdflib.URIRef('http://dbpedia.org/ontology/Person')
+    object_ns = rdflib.URIRef('http://dbpedia.org/ontology/Place')
+    organisation_ns = rdflib.URIRef('http://dbpedia.org/ontology/Organisation')
+
     for word in words:
         resource = rdflib.URIRef(f'http://dbpedia.org/resource/{word}')
-        person_ns = rdflib.URIRef('http://dbpedia.org/ontology/Person')
-        object_ns = rdflib.URIRef('http://dbpedia.org/ontology/Place')
-        organisation_ns = rdflib.URIRef('http://dbpedia.org/ontology/Organisation')
 
         graph.value(resource, rdflib.RDFS.label)
         graph.load(resource)
