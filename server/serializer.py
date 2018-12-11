@@ -69,12 +69,22 @@ def text_to_series(text):
         # If the current word is a connector and serie is not empty, add current serie to series
         # and underscore with current word to serie
         elif splitted[wi] in connectors and serie != '':
-            series += [serie]
+            serie_to_find = re.sub('_', ' ', serie)
+            begin = text.find(serie_to_find)
+            series += [{
+                'serie': serie,
+                'found': False,
+                'begin': begin,
+                'end': begin + len(serie)
+            }]
             serie += '_' + splitted[wi]
 
             # If second_serie is not empty add second_serie to series and make second_serie empty
             if second_serie != '':
-                series += [second_serie]
+                serie_to_find = re.sub('_', ' ', second_serie)
+                begin = text.find(serie_to_find)
+                series += [{'serie': second_serie, 'found': False, 'begin': begin,
+                            'end': begin + len(second_serie)}]
                 second_serie = ''
 
         # Otherwise
@@ -82,7 +92,10 @@ def text_to_series(text):
             splitted[wi] = remove_signs(splitted[wi])
             # If serie is not empty, add serie to series and make it empty
             if serie != '':
-                series += [serie]
+                serie_to_find = re.sub('_', ' ', serie)
+                begin = text.find(serie_to_find)
+                series += [
+                    {'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
                 serie = ''
             # If current word not in stopwords add it to series
             # if splitted[wi] not in stopwords:
@@ -90,14 +103,23 @@ def text_to_series(text):
 
             # If second_serie is not empty, add second_serie to series and make it empty
             if second_serie != '':
-                series += [second_serie]
+                serie_to_find = re.sub('_', ' ', second_serie)
+                
+                begin = text.find(serie_to_find)
+                series += [{'serie': second_serie, 'found': False, 'begin': begin,
+                            'end': begin + len(second_serie)}]
                 second_serie = ''
 
     # Saves when the keyword is on the last position (last word in sentence)
     if serie != '':
-        series += [serie]
+        serie_to_find = re.sub('_', ' ', serie)
+        begin = text.find(serie_to_find)
+        series += [{'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
     if second_serie != '':
-        series += [second_serie]
+        serie_to_find = re.sub('_', ' ', second_serie)
+        begin = text.find(serie_to_find)
+        series += [{'serie': second_serie, 'found': False, 'begin': begin,
+                    'end': begin + len(second_serie)}]
 
     return series
 
@@ -107,15 +129,18 @@ def dict_to_rdf(series):
     #                   'subject': 'http://dbpedia.org/resource/Florence_May_Harding',
     #                   'predicate': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
     #                   'type': 'http://dbpedia.org/ontology/Person'}]
-    response = ''
+    response = '\n'
     for serie in series:
-        word = re.sub('_', ' ', serie['word'])
+        spaced_serie = re.sub('_', ' ', serie['serie'])
         # todo: move more data here
-        response = f"<http://example.com/example-task1#char={serie['begin']},{serie['end']}>\n" \
-                   f"        a                     nif:RFC5147String , nif:String ;\n" \
-                   f"        nif:anchorOf          \"{word}\"@en ;\n" \
-                   f"        nif:beginIndex        \"{serie['begin']}\"^^xsd:nonNegativeInteger ;\n" \
-                   f"        nif:endIndex          \"{serie['end']}\"^^xsd:nonNegativeInteger ;\n" \
-                   f"        nif:referenceContext  <http://example.com/example-task1#char=0,146> ;\n" \
-                   f"        itsrdf:taIdentRef     dbpedia:{serie['word']} .\n"
+        response += f"<http://example.com/example-task1#char={serie['begin']},{serie['end']}>\n" \
+                    f"        a                     nif:RFC5147String , nif:String ;\n" \
+                    f"        nif:anchorOf          \"{spaced_serie}\"@en ;\n" \
+                    f"        nif:beginIndex        \"{serie['begin']}\"^^xsd:nonNegativeInteger ;\n" \
+                    f"        nif:endIndex          \"{serie['end']}\"^^xsd:nonNegativeInteger ;\n" \
+                    f"        nif:referenceContext  <http://example.com/example-task1#char=0,146> ;\n"
+        if serie['predicate']:
+            response += f"        itsrdf:taIdentRef     dbpedia:{serie['serie']} .\n"
+        else:
+            response += f"        itsrdf:taIdentRef     <http://aksw.org/notInWiki/{serie['serie']}> .\n"
     return response[:-1]

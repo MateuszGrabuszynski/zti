@@ -6,22 +6,25 @@ from . import serializer, graph_checker
 
 
 def handle_data(data):
-    print(f'data: {data}')
+    print(f'--CLIENT SENT:\n{data}')
 
     extracted = serializer.extract_string(data)
-    print(f'extracted: {extracted}')
+    print(f'--EXTRACTED:\n{extracted}')
 
-    if len(extracted) > 1:
+    if len(extracted) > 0:
         series = serializer.text_to_series(extracted)
     else:
         series = extracted
-    print(f'series: {series}')
+    print(f'--SERIES:\n{series}')
 
-    graphed = graph_checker.check_words(extracted, series)
+    graphed = graph_checker.check_series(series)
+    print(f'--GRAPHED:\n{graphed}')
 
     rdf = serializer.dict_to_rdf(graphed)
+    print(f'--RDF:\n{rdf}')
 
     response = data + rdf
+    print(f'--RESPONSE:\n{response}')
     return response
 
 
