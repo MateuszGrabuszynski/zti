@@ -20,17 +20,51 @@ connectors = ['a', 'an', 'in', 'the', 'of', 'at', 'for', 'to']
 dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
 
 
-def extract_string(message):
-    response = message.split("nif:isString")
-    if len(response) > 1:
-        response = response[1].split("\"")
-        if len(response) > 1:
-            response = response[1]
-    return response
+def extract_address(message):
+    """ Finds all <...>, chooses the last one and removes the unnecessary brackets
+
+    :param message: Data sent by the client.
+    :return: Just the extracted address from triangle brackets as well as search begin and end values.
+    """
+    address = re.findall("\<.*\>", message)[-1][1:-1]
+    begin, end = map(int, address.split("#char=")[1].split(','))
+    return address, begin, end
 
 
-# Removes dots, commas etc. if first or last character in word
+def extract_string(message, begin, end):
+    """ Extracts the main string from the message sent by the client and cuts it specifically.
+
+    :param message: Data sent by the client.
+    :param: begin: The beginning of the string.
+    :param: end: The end of the string.
+    :return: String part of the message.
+    """
+
+    try:
+        return message.split("nif:isString")[1].split("\"")[1][begin:end]
+    except:  # todo: narrow this except
+        return -1
+
+    # print(f"splitted: {splitted} // {len(splitted)}")
+    #
+    # if len(splitted) >= 1:
+    #     splitted = splitted[1].split("\"")
+    #
+    #     print(f"begin {begin}, len(spl) {len(splitted)}, end {end}")
+    #     if begin <= len(splitted) <= end:
+    #         print('RRR:\n', splitted, '\n\n', splitted[1], '\n')
+    #         splitted = splitted[1]#[begin:end]
+    #         print(splitted)
+    #         return splitted
+    # return -1
+
+
 def remove_signs(word):
+    """ Removes dots, commas etc. if first or last character in word
+
+    :param word: Just a word from the sentence.
+    :return: Word without dots and other signs if they are on the beginning or the end of it.
+    """
     if word[0] in dotto:
         word = word[1:]
     if word[-1:] in dotto:
@@ -38,13 +72,25 @@ def remove_signs(word):
     return word
 
 
-def text_to_series(text):
-    splitted = text.split(" ")
+def text_to_series(text, search_begin, search_end):
+    """ Splits text to series from search_begin to search_end index.
+
+    :param text: Input text extracted from data sent by the client.
+    :param search_begin: Index of the first sign, letter from which the search should begin.
+    :param search_end: Index of the last sign, letter on which the search should end.
+    :return: Array of sets as follows:
+        {
+            'serie': serie,
+            'found': False,
+            'begin': first_sign_of_the_serie,
+            'end': last_sign_of_the_serie,
+        }
+    """
+    splitted = text[search_begin:search_end].split(" ")
 
     serie = ''
+    longer_serie = ''
     series = []
-
-    second_serie = ''
 
     for wi in range(0, len(splitted)):
         # Removes one letter words
@@ -59,18 +105,18 @@ def text_to_series(text):
             # If the serie is not empty, add underscore and current word to it (basically next word)
             else:
                 serie += '_' + splitted[wi]
-                # If previous word was an connector, add it to second_serie
+                # If previous word was an connector, add it to longer_serie
                 if splitted[wi - 1] in connectors:
-                    second_serie = splitted[wi]
-                # If second_serie is not empty, add the current word to second_serie
-                elif second_serie != '':
-                    second_serie += '_' + splitted[wi]
+                    longer_serie = splitted[wi]
+                # If longer_serie is not empty, add the current word to longer_serie
+                elif longer_serie != '':
+                    longer_serie += '_' + splitted[wi]
             continue
         # If the current word is a connector and serie is not empty, add current serie to series
         # and underscore with current word to serie
         elif splitted[wi] in connectors and serie != '':
             serie_to_find = re.sub('_', ' ', serie)
-            begin = text.find(serie_to_find)
+            begin = search_begin + text.find(serie_to_find)
             series += [{
                 'serie': serie,
                 'found': False,
@@ -79,13 +125,13 @@ def text_to_series(text):
             }]
             serie += '_' + splitted[wi]
 
-            # If second_serie is not empty add second_serie to series and make second_serie empty
-            if second_serie != '':
-                serie_to_find = re.sub('_', ' ', second_serie)
-                begin = text.find(serie_to_find)
-                series += [{'serie': second_serie, 'found': False, 'begin': begin,
-                            'end': begin + len(second_serie)}]
-                second_serie = ''
+            # If longer_serie is not empty add longer_serie to series and make longer_serie empty
+            if longer_serie != '':
+                serie_to_find = re.sub('_', ' ', longer_serie)
+                begin = search_begin + text.find(serie_to_find)
+                series += [{'serie': longer_serie, 'found': False, 'begin': begin,
+                            'end': begin + len(longer_serie)}]
+                longer_serie = ''
 
         # Otherwise
         else:
@@ -93,7 +139,7 @@ def text_to_series(text):
             # If serie is not empty, add serie to series and make it empty
             if serie != '':
                 serie_to_find = re.sub('_', ' ', serie)
-                begin = text.find(serie_to_find)
+                begin = search_begin + text.find(serie_to_find)
                 series += [
                     {'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
                 serie = ''
@@ -101,44 +147,49 @@ def text_to_series(text):
             # if splitted[wi] not in stopwords:
             #     series += [splitted[wi]]
 
-            # If second_serie is not empty, add second_serie to series and make it empty
-            if second_serie != '':
-                serie_to_find = re.sub('_', ' ', second_serie)
-                
-                begin = text.find(serie_to_find)
-                series += [{'serie': second_serie, 'found': False, 'begin': begin,
-                            'end': begin + len(second_serie)}]
-                second_serie = ''
+            # If longer_serie is not empty, add longer_serie to series and make it empty
+            if longer_serie != '':
+                serie_to_find = re.sub('_', ' ', longer_serie)
+
+                begin = search_begin + text.find(serie_to_find)
+                series += [{'serie': longer_serie, 'found': False, 'begin': begin,
+                            'end': begin + len(longer_serie)}]
+                longer_serie = ''
 
     # Saves when the keyword is on the last position (last word in sentence)
     if serie != '':
         serie_to_find = re.sub('_', ' ', serie)
-        begin = text.find(serie_to_find)
+        begin = search_begin + text.find(serie_to_find)
         series += [{'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
-    if second_serie != '':
-        serie_to_find = re.sub('_', ' ', second_serie)
-        begin = text.find(serie_to_find)
-        series += [{'serie': second_serie, 'found': False, 'begin': begin,
-                    'end': begin + len(second_serie)}]
+    if longer_serie != '':
+        serie_to_find = re.sub('_', ' ', longer_serie)
+        begin = search_begin + text.find(serie_to_find)
+        series += [{'serie': longer_serie, 'found': False, 'begin': begin,
+                    'end': begin + len(longer_serie)}]
 
     return series
 
 
-def dict_to_rdf(series):
-    # example_series: [{'word': 'Florence_May_Harding', 'begin': 0, 'end': 20,
-    #                   'subject': 'http://dbpedia.org/resource/Florence_May_Harding',
-    #                   'predicate': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-    #                   'type': 'http://dbpedia.org/ontology/Person'}]
-    response = '\n'
+def prepare_response(series, data, address, begin=0):
+    """ Prepares response for the client.
+
+    :param series:
+    :param data:
+    :param address:
+    :param begin:
+    :return:
+    """
+    response = data + '\n'  # data is all data sent by user
+    nochar_address = address.split('#char=')[0]  # from address take the part without #char=...
+    # add every serie to response
     for serie in series:
-        spaced_serie = re.sub('_', ' ', serie['serie'])
-        # todo: move more data here
-        response += f"<http://example.com/example-task1#char={serie['begin']},{serie['end']}>\n" \
+        anchor_of = re.sub('_', ' ', serie['serie'])
+        response += f"<{nochar_address}#char={serie['begin']},{serie['end']}>\n" \
                     f"        a                     nif:RFC5147String , nif:String ;\n" \
-                    f"        nif:anchorOf          \"{spaced_serie}\"@en ;\n" \
+                    f"        nif:anchorOf          \"{anchor_of}\"@en ;\n" \
                     f"        nif:beginIndex        \"{serie['begin']}\"^^xsd:nonNegativeInteger ;\n" \
                     f"        nif:endIndex          \"{serie['end']}\"^^xsd:nonNegativeInteger ;\n" \
-                    f"        nif:referenceContext  <http://example.com/example-task1#char=0,146> ;\n"
+                    f"        nif:referenceContext  <{address}> ;\n"
         if serie['predicate']:
             response += f"        itsrdf:taIdentRef     dbpedia:{serie['serie']} .\n"
         else:
