@@ -6,6 +6,19 @@ graph = rdflib.Graph()
 
 
 def check_series(series):
+    """ Checks series in graph
+
+    :param series: Array output from serializer.text_to_series()
+    :return: Array with structure:
+        {
+            'serie': serie,
+            'begin': begin index,
+            'end': end index,
+            'subject': subject,
+            'predicate': predicate,
+            'type': type_of_object
+        }
+    """
     response = []
 
     person_ns = rdflib.URIRef('http://dbpedia.org/ontology/Person')
