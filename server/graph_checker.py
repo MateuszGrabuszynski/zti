@@ -1,5 +1,4 @@
 import rdflib
-import re
 
 graph = rdflib.Graph()
 
@@ -34,7 +33,7 @@ def check_series(series):
 
         # Current serie was not found in graph
         if not serie['found']:
-            response +=[
+            response += [
                 {
                     'serie': serie['serie'],
                     'begin': serie['begin'],

@@ -13,13 +13,10 @@ def handle_data(data):
     :param data: Raw data sent by the client.
     :return: Response that may be sent back to the client.
     """
-    print(f'--CLIENT SENT:\n{data}')
-
-    address, begin, end = serializer.extract_address(data)
-    # todo: this was supposed to be read from nif:beginIndex and nif:endIndex (?)
+    address = serializer.extract_address(data)
+    begin, end = serializer.extract_begin_end(data)
 
     extracted = serializer.extract_string(data, begin, end)
-    print(f'--EXTRACTED:\n{extracted}')
 
     if extracted == -1:
         print('Some error occured while extracting')
@@ -29,13 +26,10 @@ def handle_data(data):
         series = serializer.text_to_series(extracted, begin, end)
     else:
         series = extracted
-    print(f'--SERIES:\n{series}')
 
     graphed = graph_checker.check_series(series)
-    print(f'--GRAPHED:\n{graphed}')
 
     response = serializer.prepare_response(graphed, data, address)
-    print(f'--RESPONSE:\n{response}')
     return response
 
 
@@ -83,5 +77,5 @@ def run_server(host='', port=8080, max_conn=10):
             _thread.start_new_thread(handle_client, (conn,))
         except KeyboardInterrupt:
             s.close()
-            print("Server closed")
+            print("Interrupted. Server stopped.")
             break

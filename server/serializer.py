@@ -20,43 +20,42 @@ connectors = ['a', 'an', 'in', 'the', 'of', 'at', 'for', 'to']
 dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
 
 
-def extract_address(message):
+def extract_address(data):
     """ Finds all <...>, chooses the last one and removes the unnecessary brackets
 
-    :param message: Data sent by the client.
-    :return: Just the extracted address from triangle brackets as well as search begin and end values.
+    :param data: Data sent by the client.
+    :return: Just the extracted address from triangle brackets.
     """
-    address = re.findall("\<.*\>", message)[-1][1:-1]
-    begin, end = map(int, address.split("#char=")[1].split(','))
-    return address, begin, end
+    address = re.findall("\<.*\>", data)[-1][1:-1]
+    return address
 
 
-def extract_string(message, begin, end):
+def extract_begin_end(data):
+    """ Finds nif:beginIndex and nif:endIndex values.
+
+    :param data: Data sent by the client.
+    :return: Begin index and end index, -1 if error.
+    """
+    try:
+        begin = data.split("nif:beginIndex")[1].split("\"")[1]
+        end = data.split("nif:endIndex")[1].split("\"")[1]
+        return int(begin), int(end)
+    except IndexError:
+        return -1, -1
+
+
+def extract_string(data, begin, end):
     """ Extracts the main string from the message sent by the client and cuts it specifically.
 
-    :param message: Data sent by the client.
-    :param: begin: The beginning of the string.
-    :param: end: The end of the string.
+    :param end: The end of the string.
+    :param begin: The beginning of the string.
+    :param data: Data sent by the client.
     :return: String part of the message.
     """
-
     try:
-        return message.split("nif:isString")[1].split("\"")[1][begin:end]
-    except:  # todo: narrow this except
+        return data.split("nif:isString")[1].split("\"")[1][begin:end]
+    except IndexError:
         return -1
-
-    # print(f"splitted: {splitted} // {len(splitted)}")
-    #
-    # if len(splitted) >= 1:
-    #     splitted = splitted[1].split("\"")
-    #
-    #     print(f"begin {begin}, len(spl) {len(splitted)}, end {end}")
-    #     if begin <= len(splitted) <= end:
-    #         print('RRR:\n', splitted, '\n\n', splitted[1], '\n')
-    #         splitted = splitted[1]#[begin:end]
-    #         print(splitted)
-    #         return splitted
-    # return -1
 
 
 def remove_signs(word):
@@ -65,10 +64,14 @@ def remove_signs(word):
     :param word: Just a word from the sentence.
     :return: Word without dots and other signs if they are on the beginning or the end of it.
     """
-    if word[0] in dotto:
-        word = word[1:]
-    if word[-1:] in dotto:
-        word = word[:-1]
+    try:
+        if word[0] in dotto:
+            word = word[1:]
+        if word[-1:] in dotto:
+            word = word[:-1]
+    # If empty string, does not break into pieces (just pass)
+    except IndexError:
+        pass
     return word
 
 
@@ -170,14 +173,13 @@ def text_to_series(text, search_begin, search_end):
     return series
 
 
-def prepare_response(series, data, address, begin=0):
+def prepare_response(series, data, address):
     """ Prepares response for the client.
 
-    :param series:
-    :param data:
-    :param address:
-    :param begin:
-    :return:
+    :param series: Graphed series.
+    :param data: Original data from the client.
+    :param address: Address given in <> brackets by the client.
+    :return: Response to be sent back to the client.
     """
     response = data + '\n'  # data is all data sent by user
     nochar_address = address.split('#char=')[0]  # from address take the part without #char=...
