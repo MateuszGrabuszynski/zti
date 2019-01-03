@@ -1,3 +1,5 @@
+""" Checks in dbpedia graph. """
+
 import rdflib
 
 graph = rdflib.Graph()

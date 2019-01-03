@@ -1,3 +1,5 @@
+""" Extracting and serializing data from client. """
+
 import re
 
 # stopwords from nltk.corpus as on Jul 6 2018
