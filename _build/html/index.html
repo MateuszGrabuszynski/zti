@@ -1,0 +1,315 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to zti’s documentation! &#8212; ZTI  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-server.serializer">
+<span id="welcome-to-zti-s-documentation"></span><h1>Welcome to zti’s documentation!<a class="headerlink" href="#module-server.serializer" title="Permalink to this headline">¶</a></h1>
+<p>Extracting and serializing data from client.</p>
+<dl class="function">
+<dt id="server.serializer.extract_address">
+<code class="descclassname">server.serializer.</code><code class="descname">extract_address</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.extract_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds all &lt;…&gt;, chooses the last one and removes the unnecessary brackets</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – Data sent by the client.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Just the extracted address from triangle brackets.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.serializer.extract_begin_end">
+<code class="descclassname">server.serializer.</code><code class="descname">extract_begin_end</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.extract_begin_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds nif:beginIndex and nif:endIndex values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – Data sent by the client.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Begin index and end index, -1 if error.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.serializer.extract_string">
+<code class="descclassname">server.serializer.</code><code class="descname">extract_string</code><span class="sig-paren">(</span><em>data</em>, <em>begin</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.extract_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the main string from the message sent by the client and cuts it specifically.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>end</strong> – The end of the string.</li>
+<li><strong>begin</strong> – The beginning of the string.</li>
+<li><strong>data</strong> – Data sent by the client.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">String part of the message.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.serializer.prepare_response">
+<code class="descclassname">server.serializer.</code><code class="descname">prepare_response</code><span class="sig-paren">(</span><em>series</em>, <em>data</em>, <em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.prepare_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares response for the client.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>series</strong> – Graphed series.</li>
+<li><strong>data</strong> – Original data from the client.</li>
+<li><strong>address</strong> – Address given in &lt;&gt; brackets by the client.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Response to be sent back to the client.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.serializer.remove_signs">
+<code class="descclassname">server.serializer.</code><code class="descname">remove_signs</code><span class="sig-paren">(</span><em>word</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.remove_signs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes dots, commas etc. if first or last character in word</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>word</strong> – Just a word from the sentence.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Word without dots and other signs if they are on the beginning or the end of it.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.serializer.text_to_series">
+<code class="descclassname">server.serializer.</code><code class="descname">text_to_series</code><span class="sig-paren">(</span><em>text</em>, <em>search_begin</em>, <em>search_end</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.text_to_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits text to series from search_begin to search_end index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> – Input text extracted from data sent by the client.</li>
+<li><strong>search_begin</strong> – Index of the first sign, letter from which the search should begin.</li>
+<li><strong>search_end</strong> – Index of the last sign, letter on which the search should end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>Array of sets as follows:
+{</p>
+<blockquote>
+<div><p>’serie’: serie,
+‘found’: False,
+‘begin’: first_sign_of_the_serie,
+‘end’: last_sign_of_the_serie,</p>
+</div></blockquote>
+<p>}</p>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-server.graph_checker"></span><p>Checks in dbpedia graph.</p>
+<dl class="function">
+<dt id="server.graph_checker.check_series">
+<code class="descclassname">server.graph_checker.</code><code class="descname">check_series</code><span class="sig-paren">(</span><em>series</em><span class="sig-paren">)</span><a class="headerlink" href="#server.graph_checker.check_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks series in graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series</strong> – Array output from serializer.text_to_series()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array with structure:
+{<blockquote>
+<div>’serie’: serie,
+‘begin’: begin index,
+‘end’: end index,
+‘subject’: subject,
+‘predicate’: predicate,
+‘type’: type_of_object</div></blockquote>
+<p>}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-server.server"></span><p>Contains all server functions.</p>
+<dl class="function">
+<dt id="server.server.handle_client">
+<code class="descclassname">server.server.</code><code class="descname">handle_client</code><span class="sig-paren">(</span><em>conn</em><span class="sig-paren">)</span><a class="headerlink" href="#server.server.handle_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main client handling function. Runs in a new thread while the client is connected to the server.
+Closes the connection when no data is received.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conn</strong> – Connection parameters with a connection hook.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.server.handle_data">
+<code class="descclassname">server.server.</code><code class="descname">handle_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#server.server.handle_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to handle data sent by the client.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – Raw data sent by the client.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Response that may be sent back to the client.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.server.run_server">
+<code class="descclassname">server.server.</code><code class="descname">run_server</code><span class="sig-paren">(</span><em>host=''</em>, <em>port=8080</em>, <em>max_conn=10</em><span class="sig-paren">)</span><a class="headerlink" href="#server.server.run_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to run a server</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>host</strong> – Allows to run the server only locally (e.g. 127.0.0.1), empty runs everywhere (like 0.0.0.0).</li>
+<li><strong>port</strong> – Port on which the server runs.</li>
+<li><strong>max_conn</strong> – Maximum allowed number of simultaneous incoming connections.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">ZTI</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Adam Godziński, Adam Linke, Mateusz Grabuszyński.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
