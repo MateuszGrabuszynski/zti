@@ -183,7 +183,8 @@ def prepare_response(series, data, address):
     :param address: Address given in <> brackets by the client.
     :return: Response to be sent back to the client.
     """
-    response = data + '\n'  # data is all data sent by user
+    data = data[data.find('@prefix'):]
+    response = data + '\n'  # data is all data sent by user (except headers)
     nochar_address = address.split('#char=')[0]  # from address take the part without #char=...
     # add every serie to response
     for serie in series:

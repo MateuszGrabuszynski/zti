@@ -46,6 +46,10 @@ def handle_client(conn):
 
         try:
             response = handle_data(data)
+            response_OK = 'HTTP/1.1 200 OK\n'
+            response_headers = f'Content-Type: application/xml\nContent-Length: {len(response)}\nConnection: close\n\n'
+            print(response_OK + response_headers + response)
+            conn.send((response_OK + response_headers).encode())
             conn.send(response.encode())
         except Exception as ex:
             print(str(ex))
