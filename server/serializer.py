@@ -91,6 +91,13 @@ def text_to_series(text, search_begin, search_end):
             'end': last_sign_of_the_serie,
         }
     """
+    # Remove last spaces:
+    while True:
+        if text[-1:] == ' ':
+            text = text[:-1]
+        else:
+            break
+
     splitted = text[search_begin:search_end].split(" ")
 
     serie = ''
