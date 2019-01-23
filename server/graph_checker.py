@@ -39,9 +39,9 @@ def check_series(series):
                         'serie': serie['serie'],
                         'begin': serie['begin'],
                         'end': serie['end'],
-                        'subject': str(subject),
-                        'predicate': str(predicate),
-                        'type': str(object_)
+                        'subject': u''.join(subject).encode('utf-8'),
+                        'predicate': u''.join(predicate).encode('utf-8'),
+                        'type': u''.join(object_).encode('utf-8')
                     }
                 ]
                 break

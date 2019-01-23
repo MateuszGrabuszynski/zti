@@ -20,6 +20,15 @@ stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
              "wouldn't"]
 connectors = ['a', 'an', 'in', 'the', 'of', 'at', 'for', 'to']
 dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
+replacements = {'\u0104': 'A', '\u0105': 'a',
+                '\u0106': 'C', '\u0107': 'c',
+                '\u0118': 'E', '\u0119': 'e',
+                '\u0143': 'N', '\u0144': 'n',
+                '\u015a': 'S', '\u015b': 's',
+                '\u0179': 'Z', '\u017a': 'z',
+                '\u017b': 'Z', '\u017c': 'z',
+                '\u00d3': 'O', '\u00f3': 'o',
+                '\u0141': 'L', '\u0142': 'l'}
 
 
 def extract_address(data):
@@ -55,7 +64,18 @@ def extract_string(data, begin, end):
     :return: String part of the message.
     """
     try:
-        return data.split("nif:isString")[1].split("\"")[1][begin:end]
+        string_in = data.split("nif:isString")[1].split("\"")[1][begin:end]
+
+        # Polish signs replacement
+        string_out = ''
+        for i in range(len(string_in)):
+            curr_temp = replacements.get(string_in[i])
+            if curr_temp:
+                string_out += curr_temp
+            else:
+                string_out += string_in[i]
+
+        return string_out
     except IndexError:
         return -1
 
@@ -91,7 +111,7 @@ def text_to_series(text, search_begin, search_end):
             'end': last_sign_of_the_serie,
         }
     """
-    # Remove last spaces:
+    # Remove last spaces in the whole text:
     while True:
         if text[-1:] == ' ':
             text = text[:-1]

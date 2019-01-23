@@ -40,7 +40,7 @@ def handle_client(conn):
     :param conn: Connection parameters with a connection hook.
     """
     while True:
-        data = conn.recv(1024).decode()
+        data = conn.recv(1024).decode('utf-8')
         if not data:
             break
 
@@ -50,7 +50,7 @@ def handle_client(conn):
             response_headers = f'Content-Type: application/xml\nContent-Length: {len(response)}\nConnection: close\n\n'
             print(response_OK + response_headers + response)
             conn.send((response_OK + response_headers).encode())
-            conn.send(response.encode())
+            conn.send(response.encode('utf-8'))
         except Exception as ex:
             print(str(ex))
 
