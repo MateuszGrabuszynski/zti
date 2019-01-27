@@ -19,16 +19,28 @@ stopwords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
              "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn',
              "wouldn't"]
 connectors = ['a', 'an', 'in', 'the', 'of', 'at', 'for', 'to']
-dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^']
-replacements = {'\u0104': 'A', '\u0105': 'a',
-                '\u0106': 'C', '\u0107': 'c',
-                '\u0118': 'E', '\u0119': 'e',
-                '\u0143': 'N', '\u0144': 'n',
-                '\u015a': 'S', '\u015b': 's',
-                '\u0179': 'Z', '\u017a': 'z',
-                '\u017b': 'Z', '\u017c': 'z',
-                '\u00d3': 'O', '\u00f3': 'o',
-                '\u0141': 'L', '\u0142': 'l'}
+dotto = ['.', ',', ':', ';', '-', '/', ')', '(', '\'', '\"', '+', '^', '\n', '\r']
+replacements = {'\u0104': '%C4%84', '\u0105': '%C4%85',  # a
+                '\u0106': '%C4%86', '\u0107': '%C4%87',  # c
+                '\u0118': '%C4%98', '\u0119': '%C4%99',  # ę
+                '\u0143': '%C5%83', '\u0144': '%C5%84',  # ń
+                '\u015a': '%C5%9A', '\u015b': '%C5%9B',  # si
+                '\u0179': '%C5%B9', '\u017a': '%C5%BA',  # zi kreska
+                '\u017b': '%C5%BB', '\u017c': '%C5%BC',  # rz kropka
+                '\u00d3': '%C3%93', '\u00f3': '%C3%B3',  # o
+                '\u0141': '%C5%81', '\u0142': '%C5%82'}  # l
+us_states = [
+    ('Alabama', 'AL'), ('Alaska', 'AK'), ('Arizona', 'AZ'), ('Arkansas', 'AR'), ('California', "CA"),
+    ('Colorado', 'CO'), ('Connecticut', 'CT'), ('Delaware', 'DE'), ('Florida', 'FL'), ('Georgia', 'GA'),
+    ('Hawaii', 'HI'), ('Idaho', 'ID'), ('Illinois', 'IL'), ('Indiana', 'IN'), ('Iowa', 'IA'),
+    ('Kansas', 'KS'), ('Kentucky', 'KY'), ('Louisiana', 'LA'), ('Maine', 'ME'), ('Maryland', 'MD'),
+    ('Massachusetts', 'MA'), ('Michigan', 'MI'), ('Minnesota', 'MN'), ('Mississippi', 'MS'), ('Missouri', 'MO'),
+    ('Montana', 'MT'), ('Nebraska', 'NE'), ('Nevada', 'NV'), ('New_Hampshire', 'NH'), ('New_Jersey', 'NJ'),
+    ('New_Mexico', 'NM'), ('New_York', 'NY'), ('North_Carolina', 'NC'), ('North_Dakota', 'ND'), ('Ohio', 'OH'),
+    ('Oklahoma', 'OK'), ('Oregon', 'OR'), ('Pennsylvania', 'PA'), ('Rhode_Island', 'RI'), ('South_Carolina', 'SC'),
+    ('South_Dakota', 'SD'), ('Tennessee', 'TN'), ('Texas', 'TX'), ('Utah', 'UT'), ('Vermont', 'VT'),
+    ('Virginia', 'VA'), ('Washington', 'WA'), ('West_Virginia', 'WV'), ('Wisconsin', 'WI'), ('Wyoming', 'WY'),
+]
 
 
 def extract_address(data):
@@ -64,142 +76,42 @@ def extract_string(data, begin, end):
     :return: String part of the message.
     """
     try:
-        string_in = data.split("nif:isString")[1].split("\"")[1][begin:end]
-
-        # Polish signs replacement
-        string_out = ''
-        for i in range(len(string_in)):
-            curr_temp = replacements.get(string_in[i])
-            if curr_temp:
-                string_out += curr_temp
-            else:
-                string_out += string_in[i]
-
-        return string_out
+        string = data.split("nif:isString")[1].split("\"")[1][begin:end]
+        return string
     except IndexError:
         return -1
 
 
 def remove_signs(word):
-    """ Removes dots, commas etc. if first or last character in word
+    """ Removes dots, commas etc. from beginnings and endings. 'Inc' gets dot at the end and is returned as 'Inc.'
 
     :param word: Just a word from the sentence.
     :return: Word without dots and other signs if they are on the beginning or the end of it.
     """
-    try:
-        if word[0] in dotto:
-            word = word[1:]
-        if word[-1:] in dotto:
-            word = word[:-1]
-    # If empty string, does not break into pieces (just pass)
-    except IndexError:
-        pass
-    return word
-
-
-def text_to_series(text, search_begin, search_end):
-    """ Splits text to series from search_begin to search_end index.
-
-    :param text: Input text extracted from data sent by the client.
-    :param search_begin: Index of the first sign, letter from which the search should begin.
-    :param search_end: Index of the last sign, letter on which the search should end.
-    :return: Array of sets as follows:
-        {
-            'serie': serie,
-            'found': False,
-            'begin': first_sign_of_the_serie,
-            'end': last_sign_of_the_serie,
-        }
-    """
-    # Remove last spaces in the whole text:
+    # In the beginning:
     while True:
-        if text[-1:] == ' ':
-            text = text[:-1]
-        else:
-            break
-
-    splitted = text[search_begin:search_end].split(" ")
-
-    serie = ''
-    longer_serie = ''
-    series = []
-
-    for wi in range(0, len(splitted)):
-        # Removes one letter words
-        if len(splitted[wi]) == 1:
-            continue
-        # If the current word starts from uppercase letter
-        elif splitted[wi][0].isupper():
-            splitted[wi] = remove_signs(splitted[wi])
-            # If the serie is empty, add current word to it
-            if serie == '':
-                serie = splitted[wi]
-            # If the serie is not empty, add underscore and current word to it (basically next word)
+        try:
+            if word[0] in dotto:
+                word = word[1:]
             else:
-                serie += '_' + splitted[wi]
-                # If previous word was an connector, add it to longer_serie
-                if splitted[wi - 1] in connectors:
-                    longer_serie = splitted[wi]
-                # If longer_serie is not empty, add the current word to longer_serie
-                elif longer_serie != '':
-                    longer_serie += '_' + splitted[wi]
-            continue
-        # If the current word is a connector and serie is not empty, add current serie to series
-        # and underscore with current word to serie
-        elif splitted[wi] in connectors and serie != '':
-            serie_to_find = re.sub('_', ' ', serie)
-            begin = search_begin + text.find(serie_to_find)
-            series += [{
-                'serie': serie,
-                'found': False,
-                'begin': begin,
-                'end': begin + len(serie)
-            }]
-            serie += '_' + splitted[wi]
+                break
+        except IndexError:
+            pass
 
-            # If longer_serie is not empty add longer_serie to series and make longer_serie empty
-            if longer_serie != '':
-                serie_to_find = re.sub('_', ' ', longer_serie)
-                begin = search_begin + text.find(serie_to_find)
-                series += [{'serie': longer_serie, 'found': False, 'begin': begin,
-                            'end': begin + len(longer_serie)}]
-                longer_serie = ''
+    # In the end:
+    while True:
+        try:
+            if word[-1:] in dotto:
+                word = word[:-1]
+            else:
+                break
+        except IndexError:
+            pass
 
-        # Otherwise
-        else:
-            splitted[wi] = remove_signs(splitted[wi])
-            # If serie is not empty, add serie to series and make it empty
-            if serie != '':
-                serie_to_find = re.sub('_', ' ', serie)
-                begin = search_begin + text.find(serie_to_find)
-                series += [
-                    {'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
-                serie = ''
-            # If current word not in stopwords add it to series
-            # if splitted[wi] not in stopwords:
-            #     series += [splitted[wi]]
+    if word == 'Inc':
+        word = 'Inc.'
 
-            # If longer_serie is not empty, add longer_serie to series and make it empty
-            if longer_serie != '':
-                serie_to_find = re.sub('_', ' ', longer_serie)
-
-                begin = search_begin + text.find(serie_to_find)
-                series += [{'serie': longer_serie, 'found': False, 'begin': begin,
-                            'end': begin + len(longer_serie)}]
-                longer_serie = ''
-
-    # Saves when the keyword is on the last position (last word in sentence)
-    if serie != '':
-        serie_to_find = re.sub('_', ' ', serie)
-        begin = search_begin + text.find(serie_to_find)
-        series += [{'serie': serie, 'found': False, 'begin': begin, 'end': begin + len(serie)}]
-    if longer_serie != '':
-        serie_to_find = re.sub('_', ' ', longer_serie)
-        begin = search_begin + text.find(serie_to_find)
-        series += [{'serie': longer_serie, 'found': False, 'begin': begin,
-                    'end': begin + len(longer_serie)}]
-
-    return series
+    return word
 
 
 def prepare_response(series, data, address):

@@ -4,7 +4,7 @@ Welcome to zti's documentation!
 .. automodule:: server.serializer
    :members:
 
-.. automodule:: server.graph_checker
+.. automodule:: server.parser_and_checker
    :members:
 
 .. automodule:: server.server

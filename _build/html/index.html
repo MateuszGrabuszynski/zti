@@ -114,7 +114,7 @@
 <dl class="function">
 <dt id="server.serializer.remove_signs">
 <code class="descclassname">server.serializer.</code><code class="descname">remove_signs</code><span class="sig-paren">(</span><em>word</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.remove_signs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes dots, commas etc. if first or last character in word</p>
+<dd><p>Removes dots, commas etc. from beginnings and endings. ‘Inc’ gets dot at the end and is returned as ‘Inc.’</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -127,61 +127,55 @@
 </table>
 </dd></dl>
 
+<span class="target" id="module-server.parser_and_checker"></span><p>Parses the text and checks terms’ existence in dbpedia graph.</p>
 <dl class="function">
-<dt id="server.serializer.text_to_series">
-<code class="descclassname">server.serializer.</code><code class="descname">text_to_series</code><span class="sig-paren">(</span><em>text</em>, <em>search_begin</em>, <em>search_end</em><span class="sig-paren">)</span><a class="headerlink" href="#server.serializer.text_to_series" title="Permalink to this definition">¶</a></dt>
-<dd><p>Splits text to series from search_begin to search_end index.</p>
+<dt id="server.parser_and_checker.check_series">
+<code class="descclassname">server.parser_and_checker.</code><code class="descname">check_series</code><span class="sig-paren">(</span><em>series</em><span class="sig-paren">)</span><a class="headerlink" href="#server.parser_and_checker.check_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the series in Dbpedia graph.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> – Input text extracted from data sent by the client.</li>
-<li><strong>search_begin</strong> – Index of the first sign, letter from which the search should begin.</li>
-<li><strong>search_end</strong> – Index of the last sign, letter on which the search should end.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series</strong> – Series extracted from parse function.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>Array of sets as follows:
-{</p>
-<blockquote>
-<div><p>’serie’: serie,
-‘found’: False,
-‘begin’: first_sign_of_the_serie,
-‘end’: last_sign_of_the_serie,</p>
-</div></blockquote>
-<p>}</p>
-</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Table of dicts:</td>
 </tr>
 </tbody>
 </table>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“serie”: term,
+“subject”: dbpedia subject,
+“predicate”: dbpedia predicate,
+“type”: dbpedia type,</dd>
+</dl>
+<p>}</p>
 </dd></dl>
 
-<span class="target" id="module-server.graph_checker"></span><p>Checks in dbpedia graph.</p>
 <dl class="function">
-<dt id="server.graph_checker.check_series">
-<code class="descclassname">server.graph_checker.</code><code class="descname">check_series</code><span class="sig-paren">(</span><em>series</em><span class="sig-paren">)</span><a class="headerlink" href="#server.graph_checker.check_series" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks series in graph</p>
+<dt id="server.parser_and_checker.parse">
+<code class="descclassname">server.parser_and_checker.</code><code class="descname">parse</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="headerlink" href="#server.parser_and_checker.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main parsing function using Stanford NER Parser and little tweaks from the authors.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series</strong> – Array output from serializer.text_to_series()</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> – Sentence to be parsed.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array with structure:
-{<blockquote>
-<div>’serie’: serie,
-‘begin’: begin index,
-‘end’: end index,
-‘subject’: subject,
-‘predicate’: predicate,
-‘type’: type_of_object</div></blockquote>
-<p>}</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Table of dicts:</td>
 </tr>
 </tbody>
 </table>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“serie”: term,
+“subject”: dbpedia subject,
+“predicate”: dbpedia predicate,
+“type”: dbpedia type,
+“begin”: begin index,
+“end”: end index,</dd>
+</dl>
+<p>}</p>
 </dd></dl>
 
 <span class="target" id="module-server.server"></span><p>Contains all server functions.</p>

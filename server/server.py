@@ -4,7 +4,7 @@ import socket
 import sys
 import _thread
 
-from . import serializer, graph_checker
+from server import serializer, parser_and_checker
 
 
 def handle_data(data):
@@ -23,13 +23,17 @@ def handle_data(data):
         return -1
 
     if len(extracted) > 0:
-        series = serializer.text_to_series(extracted, begin, end)
-    else:
-        series = extracted
+        parsed = parser_and_checker.parse(extracted)
+        print('-----------')
+        print(parsed)
+        print('-----------')
+        # series = serializer.text_to_series(extracted, begin, end)
+    # else:
+        # series = extracted
 
-    graphed = graph_checker.check_series(series)
+    # graphed = graph_checker.check_series(series)
 
-    response = serializer.prepare_response(graphed, data, address)
+    response = serializer.prepare_response(parsed, data, address)
     return response
 
 
