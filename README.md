@@ -1,3 +1,5 @@
+> **Note:** By no means is this code secure or validated. Treat as unchecked copy archived due to no changes planned.
+
 # ZTI
 Projekt na zajęcia z Zastosowań technologii informatycznych (ZTI)  
 **Task 1:** Focused Named Entity Identification and Linking
